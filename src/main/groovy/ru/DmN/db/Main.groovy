@@ -61,6 +61,28 @@ class Main {
                     if (ActionResult.parse(is.read()) == ActionResult.FAIL)
                         throw new RuntimeException("GET VALUE ERROR")
                     else println "[OK] GET VALUE"
+
+                    os.write Action.parse(Action.CREATE_TABLE)
+                    os.write "Online Table\n"
+                    os.write 2
+
+                    os.write "Id\n"
+                    os.write 1
+                    os.write Column.Attribute.parse(Column.Attribute.AUTO_INCREMENT)
+                    os.write DataType.parse(DataType.INT)
+                    os.write "0\n"
+
+                    os.write "Name\n"
+                    os.write 1
+                    os.write Column.Attribute.parse(Column.Attribute.NOT_NULL)
+                    os.write DataType.parse(DataType.STRING)
+                    os.write "[NO NAME]\n"
+
+                    os.flush()
+
+                    if (ActionResult.parse(is.read()) == ActionResult.FAIL)
+                        throw new RuntimeException("CREATE TABLE ERROR")
+                    else println "[OK] CREATE TABLE"
                 }
             }
         }

@@ -32,17 +32,18 @@ class Column <T> {
     }
 
     static enum Attribute {
-        AUTO_INCREMENT(0),
-        NOT_NULL(1)
+        AUTO_INCREMENT,
+        NOT_NULL
 
-        int code
-
-        Attribute(int code) {
-            this.code = code
+        static int parse(Attribute attr) {
+            switch (attr) {
+                case AUTO_INCREMENT: return 0
+                case NOT_NULL: return 1
+            }
         }
 
         static Attribute parse(int code) {
-            return values().find { it.code == code }
+            return values()[code]
         }
     }
 }
