@@ -68,7 +68,7 @@ class Main {
         {
             try (def db = new DataBase(228, "test.dmn.db")) {
                 db.load()
-                (db.tables.last() as Table).print(System.out)
+                db.tables.forEach { it.print(System.out) }
             }
         }
     }
