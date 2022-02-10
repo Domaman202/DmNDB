@@ -119,6 +119,12 @@ class DataBase implements Closeable {
                         this.os.write ActionResult.parse(ActionResult.SUCCESS)
                         this.os.flush()
                         break
+                    case Action.GET_VALUE:
+                        this.os.write this.selectedc.data[this.is.read()].toString() + '\n'
+
+                        this.os.write ActionResult.parse(ActionResult.SUCCESS)
+                        this.os.flush()
+                        break
                     default:
                         this.os.write ActionResult.parse(ActionResult.FAIL)
                         this.os.write "PARSE ACTION ERROR\n"

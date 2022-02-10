@@ -51,6 +51,16 @@ class Main {
                     if (ActionResult.parse(is.read()) == ActionResult.FAIL)
                         throw new RuntimeException("SET VALUE ERROR")
                     else println "[OK] SET VALUE"
+
+                    os.write Action.parse(Action.GET_VALUE)
+                    os.write 0
+                    os.flush()
+
+                    assert is.readLine().equals("123456789")
+
+                    if (ActionResult.parse(is.read()) == ActionResult.FAIL)
+                        throw new RuntimeException("GET VALUE ERROR")
+                    else println "[OK] GET VALUE"
                 }
 
                 Thread.sleep 2000

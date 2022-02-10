@@ -23,6 +23,18 @@ enum DataType {
         return values()[code]
     }
 
+    static DataType parse(String clazz) {
+        switch(clazz) {
+            case "java.lang.Character": return CHAR
+            case "java.lang.Integer": return INT
+            case "java.lang.Long": return LONG
+            case "java.lang.Double": return DOUBLE
+            case "java.lang.String": return STRING
+            case "ru.DmN.db.Table": return REFERENCE
+            default: throw new RuntimeException("") // TODO:
+        }
+    }
+
     static Object parseOf(DataType type, String str, ArrayList<Table> tables) {
         switch(type) {
             case CHAR: return str.toCharacter()
