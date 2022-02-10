@@ -56,14 +56,12 @@ class Main {
                     os.write 0
                     os.flush()
 
-                    assert is.readLine().equals("123456789")
+                    assert is.readLine() == "123456789"
 
                     if (ActionResult.parse(is.read()) == ActionResult.FAIL)
                         throw new RuntimeException("GET VALUE ERROR")
                     else println "[OK] GET VALUE"
                 }
-
-                Thread.sleep 2000
             }
         }
 
