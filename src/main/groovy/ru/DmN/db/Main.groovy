@@ -22,65 +22,29 @@ class Main {
                     db.accept().run()
                 }
 
-                try (var socket = new Socket("localhost", 228)) {
-                    def is = new InputStreamReader(socket.inputStream)
-                    def os = new OutputStreamWriter(socket.outputStream)
+                try (var connection = new DataBaseClient("localhost", 228)) {
+                    def is = connection.is
+                    def os = connection.os
 
-                    os.write Action.parse(Action.SELECT_TABLE)
-                    os.write "Users\n"
-                    os.flush()
-
-                    if (ActionResult.parse(is.read()) == ActionResult.FAIL)
+                    if (connection.aSelectTable("Users") == ActionResult.FAIL)
                         throw new RuntimeException("SELECT TABLE ERROR")
                     else println "[OK] SELECT TABLE"
 
-                    os.write Action.parse(Action.SELECT_COLUMN)
-                    os.write "Password\n"
-                    os.flush()
-
-                    if (ActionResult.parse(is.read()) == ActionResult.FAIL)
+                    if (connection.aSelectColumn("Password") == ActionResult.FAIL)
                         throw new RuntimeException("SELECT COLUMN ERROR")
                     else println "[OK] SELECT COLUMN"
 
-                    os.write Action.parse(Action.SET_VALUE)
-                    os.write 1
-                    os.write DataType.parse(DataType.STRING)
-                    os.write "p2356word767\n"
-                    os.flush()
-
-                    if (ActionResult.parse(is.read()) == ActionResult.FAIL)
+                    if (connection.aSetValue(1, DataType.STRING, "p2356word767") == ActionResult.FAIL)
                         throw new RuntimeException("SET VALUE ERROR")
                     else println "[OK] SET VALUE"
 
-                    os.write Action.parse(Action.GET_VALUE)
-                    os.write 0
-                    os.flush()
-
-                    assert is.readLine() == "123456789"
-
-                    if (ActionResult.parse(is.read()) == ActionResult.FAIL)
+                    def result = connection.<String>aGetValue(0, DataType.STRING)
+                    assert result.first == "123456789"
+                    if (result.second == ActionResult.FAIL)
                         throw new RuntimeException("GET VALUE ERROR")
                     else println "[OK] GET VALUE"
 
-                    os.write Action.parse(Action.CREATE_TABLE)
-                    os.write "Online Table\n"
-                    os.write 2
-
-                    os.write "Id\n"
-                    os.write 1
-                    os.write Column.Attribute.parse(Column.Attribute.AUTO_INCREMENT)
-                    os.write DataType.parse(DataType.INT)
-                    os.write "0\n"
-
-                    os.write "Name\n"
-                    os.write 1
-                    os.write Column.Attribute.parse(Column.Attribute.NOT_NULL)
-                    os.write DataType.parse(DataType.STRING)
-                    os.write "[NO NAME]\n"
-
-                    os.flush()
-
-                    if (ActionResult.parse(is.read()) == ActionResult.FAIL)
+                    if (connection.aCreateTable("Online Table", new DataBaseClient.ColumnData[]{["Name", new Column.Attribute[]{Column.Attribute.NOT_NULL}, DataType.STRING, "[NO NAME]"], ["Id", new Column.Attribute[]{Column.Attribute.AUTO_INCREMENT}, DataType.INT, "0"]}) == ActionResult.FAIL)
                         throw new RuntimeException("CREATE TABLE ERROR")
                     else println "[OK] CREATE TABLE"
                 }

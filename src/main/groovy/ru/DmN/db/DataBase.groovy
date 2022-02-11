@@ -82,7 +82,6 @@ class DataBase implements Closeable {
                             def type = DataType.parse(this.is.read())
 
                             columns[i - 1] = new Column(cname, attributes, type.clazz, DataType.parseOf(type, this.is.readLine(), DataBase.this.tables), new ArrayList<>())
-                            println "NIGGER!"
                         }
 
                         DataBase.this.tables.add new Table(name, columns)
