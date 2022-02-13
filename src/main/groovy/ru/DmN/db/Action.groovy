@@ -2,8 +2,8 @@ package ru.DmN.db;
 
 enum Action {
     CREATE_TABLE,
-    SELECT_TABLE,
     DELETE_TABLE,
+    SELECT_TABLE,
     //
     SELECT_COLUMN,
     //

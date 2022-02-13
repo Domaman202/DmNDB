@@ -36,6 +36,13 @@ class DataBaseClient implements DBProvider, Closeable {
         return ActionResult.parse(this.is.read())
     }
 
+    @Override
+    ActionResult aDeleteTable() {
+        this.os.write Action.parse(Action.DELETE_TABLE)
+        this.os.flush()
+        return ActionResult.parse(this.is.read())
+    }
+
     ActionResult aSelectTable(String name) {
         this.os.write Action.parse(Action.SELECT_TABLE)
         this.os.write "$name\n"

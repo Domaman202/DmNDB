@@ -3,6 +3,8 @@ package ru.DmN.db
 interface DBProvider {
     ActionResult aCreateTable(String name, ColumnData[] cds);
 
+    ActionResult aDeleteTable();
+
     ActionResult aSelectTable(String name);
 
     ActionResult aSelectColumn(String name);

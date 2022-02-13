@@ -48,12 +48,61 @@ class DataBase implements Closeable {
         save()
     }
 
-    class Connection implements Runnable, Closeable {
+    class DBProviderImpl implements DBProvider {
+        Table selectedt
+        Column selectedc
+
+        @Override
+        ActionResult aCreateTable(String name, ColumnData[] cds) {
+            def columns = new Column[cds.size()]
+            for (int i = 0; i < cds.size(); i++)
+                cds[i].with {
+                    columns[i] = new Column(it.name, it.attributes, it.type.clazz, DataType.parseOf(it.type, it.defaultValue, DataBase.this.tables), new ArrayList<>())
+                }
+            def table = new Table(name, columns)
+            def res = DataBase.this.tables.contains(table) ? ActionResult.FAIL : ActionResult.SUCCESS
+            DataBase.this.tables.add table
+            return res
+        }
+
+        @Override
+        ActionResult aDeleteTable() {
+            return DataBase.this.tables.remove(selectedt) ? ActionResult.SUCCESS : ActionResult.FAIL
+        }
+
+        @Override
+        ActionResult aSelectTable(String name) {
+            this.selectedt = DataBase.this.tables.find { it.name == name }
+            return this.selectedt == null ? ActionResult.FAIL : ActionResult.SUCCESS
+        }
+
+        @Override
+        ActionResult aSelectColumn(String name) {
+            this.selectedc = this.selectedt.columns.find { it.name == name }
+            return this.selectedc == null ? ActionResult.FAIL : ActionResult.SUCCESS
+        }
+
+        @Override
+        ActionResult aSetValue(int id, DataType type, String value) {
+            if (this.selectedc.data.size() > id) {
+                this.selectedc.data[id] = DataType.parseOf(type, value, DataBase.this.tables)
+                return ActionResult.SUCCESS
+            }
+            return ActionResult.FAIL
+        }
+
+        @Override
+        <T> Tuple2<T, ActionResult> aGetValue(int id, DataType type) {
+            if (this.selectedc.data.size() > id)
+                return new Tuple2<>(this.selectedc.data[id], ActionResult.SUCCESS)
+            return new Tuple2<>(null, ActionResult.FAIL)
+        }
+    }
+
+    class Connection extends DBProviderImpl implements Runnable, Closeable {
         Socket socket
         InputStreamReader is
         OutputStreamWriter os
-        Table selectedt
-        Column selectedc
 
         Connection(Socket socket) {
             this.socket = socket
@@ -89,34 +138,20 @@ class DataBase implements Closeable {
                         this.os.write ActionResult.parse(ActionResult.SUCCESS)
                         this.os.flush()
                         break
-                    case Action.SELECT_TABLE:
-                        def name = this.is.readLine()
-                        this.selectedt = DataBase.this.tables.find { it.name == name }
-
-                        this.os.write ActionResult.parse(ActionResult.SUCCESS)
+                    case Action.DELETE_TABLE:
+                        this.os.write ActionResult.parse(this.aDeleteTable())
                         this.os.flush()
                         break
-                    case Action.DELETE_TABLE:
-                        DataBase.this.tables.remove this.selectedt
-
-                        this.os.write ActionResult.parse(ActionResult.SUCCESS)
+                    case Action.SELECT_TABLE:
+                        this.os.write ActionResult.parse(this.aSelectTable(this.is.readLine()))
                         this.os.flush()
                         break
                     case Action.SELECT_COLUMN:
-                        def name = this.is.readLine()
-                        this.selectedc = this.selectedt.columns.find { it.name == name }
-
-                        this.os.write ActionResult.parse(ActionResult.SUCCESS)
+                        this.os.write ActionResult.parse(this.aSelectColumn(this.is.readLine()))
                         this.os.flush()
                         break
                     case Action.SET_VALUE:
-                        def i = this.is.read()
-                        def type = this.is.read()
-                        def value = this.is.readLine()
-
-                        this.selectedc.data[i] = DataType.parseOf DataType.parse(type), value, DataBase.this.tables
-
-                        this.os.write ActionResult.parse(ActionResult.SUCCESS)
+                        this.os.write ActionResult.parse(this.aSetValue(this.is.read(), DataType.parse(this.is.read()), this.is.readLine()))
                         this.os.flush()
                         break
                     case Action.GET_VALUE:
