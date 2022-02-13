@@ -22,10 +22,7 @@ class Main {
                     db.accept().run()
                 }
 
-                try (var connection = new DataBaseClient("localhost", 228)) {
-                    def is = connection.is
-                    def os = connection.os
-
+                try (DBProvider connection = new DataBaseClient("localhost", 228)) {
                     if (connection.aSelectTable("Users") == ActionResult.FAIL)
                         throw new RuntimeException("SELECT TABLE ERROR")
                     else println "[OK] SELECT TABLE"
@@ -44,7 +41,7 @@ class Main {
                         throw new RuntimeException("GET VALUE ERROR")
                     else println "[OK] GET VALUE"
 
-                    if (connection.aCreateTable("Online Table", new DataBaseClient.ColumnData[]{["Name", new Column.Attribute[]{Column.Attribute.NOT_NULL}, DataType.STRING, "[NO NAME]"], ["Id", new Column.Attribute[]{Column.Attribute.AUTO_INCREMENT}, DataType.INT, "0"]}) == ActionResult.FAIL)
+                    if (connection.aCreateTable("Online Table", new DBProvider.ColumnData[]{["Name", new Column.Attribute[]{Column.Attribute.NOT_NULL}, DataType.STRING, "[NO NAME]"], ["Id", new Column.Attribute[]{Column.Attribute.AUTO_INCREMENT}, DataType.INT, "0"]}) == ActionResult.FAIL)
                         throw new RuntimeException("CREATE TABLE ERROR")
                     else println "[OK] CREATE TABLE"
                 }

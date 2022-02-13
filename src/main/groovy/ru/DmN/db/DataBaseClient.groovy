@@ -1,6 +1,6 @@
 package ru.DmN.db
 
-class DataBaseClient implements Closeable {
+class DataBaseClient implements DBProvider, Closeable {
     Socket socket
     InputStreamReader is
     OutputStreamWriter os
@@ -20,7 +20,7 @@ class DataBaseClient implements Closeable {
     ActionResult aCreateTable(String name, ColumnData[] cds) {
         this.os.write Action.parse(Action.CREATE_TABLE)
         this.os.write "$name\n"
-        this. os.write cds.size()
+        this.os.write cds.size()
 
         for (def cd : cds) {
             this.os.write "$cd.name\n"
@@ -76,20 +76,6 @@ class DataBaseClient implements Closeable {
             this.socket.close()
             this.is.close()
             this.os.close()
-        }
-    }
-
-    static class ColumnData {
-        String name
-        Column.Attribute[] attributes
-        DataType type
-        String defaultValue
-
-        ColumnData(String name, Column.Attribute[] attributes, DataType type, String defaultValue) {
-            this.name = name
-            this.attributes = attributes
-            this.type = type
-            this.defaultValue = defaultValue
         }
     }
 }
