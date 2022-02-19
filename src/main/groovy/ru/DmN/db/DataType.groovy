@@ -6,7 +6,7 @@ enum DataType {
     LONG(Long.class),
     DOUBLE(Double.class),
     STRING(String.class),
-    ARRAY(Object[].class),
+    ARRAY(ArrayList[].class),
     REFERENCE(Table.class)
 
     Class<?> clazz
@@ -30,6 +30,7 @@ enum DataType {
             case "java.lang.Long": return LONG
             case "java.lang.Double": return DOUBLE
             case "java.lang.String": return STRING
+            case "java.util.ArrayList": return ARRAY
             case "ru.DmN.db.Table": return REFERENCE
             default: throw new RuntimeException("") // TODO:
         }
@@ -42,7 +43,7 @@ enum DataType {
             case LONG: return str.toLong()
             case DOUBLE: return str.toDouble()
             case STRING: return str
-            case ARRAY: return new Object[str.toInteger()]
+            case ARRAY: return new ArrayList(str.toInteger())
             case REFERENCE: return tables.find { it.name == str }
         }
     }
